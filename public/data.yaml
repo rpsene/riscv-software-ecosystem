@@ -1565,3 +1565,10 @@
   status: Enabled
   type: Open Source
   riscvEnablement: "https://www.vim.org"
+
+- id: 232
+  category: Operating System
+  software: "Ubuntu"
+  status: Enabled
+  type: Open Source
+  riscvEnablement: "https://ubuntu.com/risc-v"
