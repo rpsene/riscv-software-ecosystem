@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 
 interface StatusDonutProps {
   data: any[];
@@ -9,6 +9,63 @@ const STATUS_COLORS: Record<string, string> = {
   "In Progress": "#D6E4FF", // soft blue
   TBD: "#E5F3FF",           // very light cyan/blue
   Optimized: "#EBDDFF",     // soft lavender
+};
+
+interface SegmentDatum {
+  status: string;
+  count: number;
+  percentage: number;
+  color: string;
+}
+
+// A single bar segment whose label font size adapts to its measured width,
+// so narrow segments (e.g. a 12% slice) shrink their text to fit instead of
+// overflowing.
+const BarSegment: React.FC<{ seg: SegmentDatum }> = ({ seg }) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const [width, setWidth] = useState(0);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver((entries) => {
+      setWidth(entries[0].contentRect.width);
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  const label = `${seg.status} (${seg.count})`;
+  const pct = `${seg.percentage.toFixed(1)}%`;
+
+  // Longest line drives the fit. Approx avg glyph advance ≈ 0.58em.
+  const longest = Math.max(label.length, pct.length);
+  // Reserve horizontal padding (~8px) before fitting text.
+  const usable = Math.max(0, width - 8);
+  const fitted = usable / (longest * 0.58);
+  // Clamp so text stays legible but never overflows the slice.
+  const labelSize = Math.max(7, Math.min(14, fitted));
+  const pctSize = Math.max(6, labelSize * 0.82);
+
+  return (
+    <div
+      ref={ref}
+      style={{ width: `${seg.percentage}%`, backgroundColor: seg.color }}
+      className="flex items-center justify-center h-10 px-1 overflow-hidden"
+    >
+      <div className="text-center font-semibold text-[#003262] leading-tight">
+        <div className="whitespace-nowrap" style={{ fontSize: `${labelSize}px` }}>
+          {label}
+        </div>
+        <div
+          className="whitespace-nowrap font-normal"
+          style={{ fontSize: `${pctSize}px` }}
+        >
+          {pct}
+        </div>
+      </div>
+    </div>
+  );
 };
 
 const StatusDonut: React.FC<StatusDonutProps> = ({ data }) => {
@@ -84,23 +141,7 @@ const StatusDonut: React.FC<StatusDonutProps> = ({ data }) => {
         <div className="flex-1 flex items-center justify-center">
           <div className="flex w-full rounded-xl overflow-hidden">
             {segments.map((seg) => (
-              <div
-                key={seg.status}
-                style={{
-                  width: `${seg.percentage}%`,
-                  backgroundColor: seg.color,
-                }}
-                className="flex items-center justify-center h-10 px-2"
-              >
-                <div className="text-center text-xs md:text-sm font-semibold text-[#003262]">
-                  <div>
-                    {seg.status} ({seg.count})
-                  </div>
-                  <div className="text-[10px] md:text-xs font-normal">
-                    {seg.percentage.toFixed(1)}%
-                  </div>
-                </div>
-              </div>
+              <BarSegment key={seg.status} seg={seg} />
             ))}
           </div>
         </div>
@@ -115,4 +156,7 @@ const StatusDonut: React.FC<StatusDonutProps> = ({ data }) => {
   );
 };
 
-export default StatusDonut;
+// Memoized: the snapshot bar is driven by the full (unfiltered) dataset, which
+// is stable after load — so it should not re-render while the user types in the
+// search box or pages through the table.
+export default React.memo(StatusDonut);

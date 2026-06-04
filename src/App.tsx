@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
 import * as yaml from "js-yaml";
-import { unparse } from "papaparse";
 import Header from "./components/Header";
 import FiltersBar from "./components/FiltersBar";
 import StatusDonut from "./components/StatusDonut";
@@ -155,9 +154,12 @@ const App: React.FC = () => {
     setPage(1);
   }, [filters, search, sortConfig]);
 
-  // CSV export of filtered + sorted view
-  const handleExportCsv = () => {
+  // CSV export of filtered + sorted view.
+  // papaparse is loaded on demand so it stays out of the initial bundle.
+  const handleExportCsv = async () => {
     if (!sortedData.length) return;
+
+    const { unparse } = await import("papaparse");
 
     const csv = unparse(
       sortedData.map((row: Row) => ({

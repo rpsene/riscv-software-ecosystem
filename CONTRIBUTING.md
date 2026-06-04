@@ -1,51 +1,59 @@
-# Contributing to RISC-V Software Ecosystem
+# Help Keep the RISC-V Software Map Honest
 
-Thank you for your interest in contributing to the RISC-V Software Ecosystem Dashboard! We welcome contributions to keep the data accurate and up-to-date.
+This dashboard is only as good as its data — and the RISC-V ecosystem moves **fast**. A package that was "In Progress" last quarter may have shipped riscv64 binaries yesterday. A status marked "TBD" might be one upstream commit away from "Optimized."
 
-## How to Add or Update a Package
+**If you know something we don't, you can fix the map in under five minutes.** Every entry below has a real impact: vendors, distros, and developers use this catalog to decide where to invest porting effort.
 
-All data is stored in a YAML file located at `public/data.yaml`.
+> 🎯 **The single most valuable thing you can do:** correct one status that's wrong, and attach a link that proves it.
 
-To add a new package or update an existing one:
+---
 
-1.  **Fork the repository** and clone it locally.
-2.  **Open** `public/data.yaml` in your favorite text editor.
-3.  **Add a new entry** to the list (or modify an existing one).
+## Pick Your Path
 
-### Data Format
+You don't need to be a maintainer — or even clone the repo — to contribute.
 
-Each entry in `public/data.yaml` must follow this structure:
+### 🟢 Path 1 — Spotted something wrong? Open an issue (2 minutes, no Git)
 
-```yaml
-- id: <unique_id>
-  category: <Category Name>
-  software: "<Software Name>"
-  status: <Status>
-  type: <Type>
-  riscvEnablement: "<URL>"
+The fastest way to help. Just tell us what's off:
+
+> [**→ Open a new issue**](../../issues/new)
+
+Include:
+- **Which package** (and its current status on the dashboard)
+- **What it should be** (Enabled / In Progress / Optimized / TBD)
+- **A link that proves it** — a merged PR, release note, distro package, CI matrix, or upstream doc
+
+That's it. A maintainer will turn it into a data change.
+
+### 🟡 Path 2 — Edit the data right in your browser (5 minutes)
+
+GitHub lets you edit a file and open a Pull Request without ever leaving the web UI:
+
+1. Open [`public/data.yaml`](public/data.yaml).
+2. Click the **✏️ pencil** (top-right of the file). GitHub forks the repo for you automatically.
+3. Add or change an entry (see [the format below](#the-data-format)).
+4. Scroll down, describe your change, and click **Propose changes**.
+
+CI validates your edit automatically — no local setup required.
+
+### 🔵 Path 3 — Full local workflow (for bulk updates)
+
+```bash
+git clone <your-fork-url>
+cd adm-riscv-software-ecosystem
+npm install
+# edit public/data.yaml
+npm run validate:data    # catch schema errors before you push
+npm run dev              # optional: preview the dashboard locally
 ```
 
-#### Fields Description
+Then commit, push, and open a Pull Request against `main`.
 
-| Field | Type | Description |
-| :--- | :--- | :--- |
-| `id` | string/number | A unique identifier for the entry. |
-| `category` | string | The category of the software (e.g., "AI", "Toolchain"). |
-| `software` | string | The name of the software package. |
-| `status` | string | The current RISC-V enablement status. Must be one of the allowed values. |
-| `type` | string | The license type or distribution model (e.g., "Open Source", "Commercial"). |
-| `riscvEnablement` | string (URL) | A link to evidence of RISC-V support (GitHub repo, documentation, issue tracker, etc.). |
+---
 
-#### Allowed Status Values
+## The Data Format
 
-The `status` field must be one of the following:
-
-- **Enabled**: Full support, production ready.
-- **In Progress**: Enablement is currently underway.
-- **Optimized**: Software is not only enabled but also tuned/enhanced for RISC-V.
-- **TBD**: Status is pending verification or unknown.
-
-### Example Entry
+All entries live in [`public/data.yaml`](public/data.yaml). Each one looks like this:
 
 ```yaml
 - id: 9999
@@ -56,26 +64,49 @@ The `status` field must be one of the following:
   riscvEnablement: "https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/linux/riscv.md"
 ```
 
-## Validation
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `id` | number | Unique identifier. Use the next free number — don't reuse one. |
+| `category` | string | Grouping, e.g. `AI`, `Toolchain`, `Operating System`. Reuse an existing category if one fits. |
+| `software` | string | The package name (quoted). |
+| `status` | string | RISC-V enablement status — **must** be one of the allowed values below. |
+| `type` | string | `Open Source` or `Commercial`. |
+| `riscvEnablement` | URL | **The most important field.** A link that *proves* the status. |
 
-Before submitting your changes, please run the validation script to ensure your data conforms to the schema.
+### Choosing the right status — be strict
 
-1.  **Install dependencies** (if you haven't already):
-    ```bash
-    npm install
-    ```
+The credibility of this catalog depends on consistent, evidence-backed statuses. Use this rubric:
 
-2.  **Run the validator**:
-    ```bash
-    npm run validate:data
-    ```
+| Status | Use it when… | Good evidence |
+| :--- | :--- | :--- |
+| **Optimized** | RISC-V Vector (RVV) or hand-tuned riscv64 assembly is **merged upstream and released**. | Merged PR adding RVV kernels; release notes mentioning RISC-V optimization. |
+| **Enabled** | There's **stable, official riscv64 support** — it builds and runs, and ships in upstream releases or a distro (Debian/Fedora/etc.). | Official riscv64 package; CI matrix with riscv64; upstream "supported architectures" doc. |
+| **In Progress** | Active porting is happening, but there's **no stable official riscv64 release** yet. | Open porting PRs; tech-preview/beta; roadmap commitment. |
+| **TBD** | No evidence either way, or RISC-V is **not applicable** (e.g. an arch-independent protocol, or an x86-only product). | — |
 
-If the validation fails, the script will output error messages indicating which field or item is incorrect. Please fix these errors before committing.
+> 🔗 **A status without a proving link is a guess.** Always pair a status with a `riscvEnablement` URL pointing to the *strongest* available evidence — prefer a merged PR or official package over a forum post or marketing page.
 
-## Submitting Changes
+---
 
-1.  **Commit your changes** with a clear message (e.g., "Add Chromium to data.yaml").
-2.  **Push** to your forked repository.
-3.  **Open a Pull Request** against the `main` branch of this repository.
+## Before You Submit
 
-The CI workflow will automatically run the validation script on your Pull Request.
+Run the validator — CI runs the same check and will block a malformed PR:
+
+```bash
+npm install        # once
+npm run validate:data
+```
+
+If it fails, the error names the offending field or entry. Fix it, re-run, repeat until green.
+
+---
+
+## Submitting
+
+1. **Commit** with a clear message, e.g. `data: promote UCX to Enabled (Debian riscv64 pkg)`.
+2. **Push** to your fork.
+3. **Open a Pull Request** against `main`. In the description, link the evidence so review is fast.
+
+CI validates every PR automatically. Once merged, the dashboard rebuilds and your change goes live within the hour. 🚀
+
+**Thank you — every corrected status makes the RISC-V ecosystem a little more legible.**
