@@ -227,7 +227,7 @@
   software: "TWAIN Direct"
   status: TBD
   type: Open Source
-  riscvEnablement: "https://github.com/twain/twain-direct"
+  riscvEnablement: "https://twaindirect.org/specification/"
 
 - id: 34
   category: ISA Simulator
@@ -351,9 +351,9 @@
 - id: 51
   category: Networking
   software: "OpenIB"
-  status: TBD
+  status: Enabled
   type: Open Source
-  riscvEnablement: "https://www.openfabrics.org/"
+  riscvEnablement: "https://buildd.debian.org/status/package.php?p=rdma-core"
 
 - id: 52
   category: Networking
@@ -409,7 +409,7 @@
   software: "ChromeOS Flex"
   status: TBD
   type: Commercial
-  riscvEnablement: "https://chromeenterprise.google/os/chromeosflex/"
+  riscvEnablement: "https://support.google.com/chromeosflex/answer/11552529"
 
 - id: 60
   category: Operating System
@@ -442,9 +442,9 @@
 - id: 65
   category: Operating System
   software: "SUSE Linux Enterprise"
-  status: TBD
+  status: In Progress
   type: Commercial
-  riscvEnablement: "https://www.suse.com/products/"
+  riscvEnablement: "https://en.opensuse.org/openSUSE:RISC-V"
 
 - id: 66
   category: Operating System
@@ -519,7 +519,7 @@
 - id: 77
   category: Operating System
   software: "QNX"
-  status: TBD
+  status: In Progress
   type: Commercial
   riscvEnablement: "https://blackberry.qnx.com/en"
 
@@ -766,7 +766,7 @@
   software: "Apache MXNet"
   status: TBD
   type: Open Source
-  riscvEnablement: "https://mxnet.apache.org"
+  riscvEnablement: "https://attic.apache.org/projects/mxnet.html"
 
 - id: 114
   category: AI
@@ -899,7 +899,7 @@
   software: "TiDB"
   status: TBD
   type: Open Source
-  riscvEnablement: "https://github.com/pingcap/tidb"
+  riscvEnablement: "https://docs.pingcap.com/tidb/stable/hardware-and-software-requirements/"
 
 - id: 133
   category: Libraries
@@ -1310,9 +1310,9 @@
 - id: 192
   category: HPC
   software: "UCX (Unified Communication X)"
-  status: TBD
+  status: Enabled
   type: Open Source
-  riscvEnablement: "https://www.openucx.org"
+  riscvEnablement: "https://github.com/openucx/ucx/pull/9168"
 
 - id: 193
   category: GUI Toolkit
